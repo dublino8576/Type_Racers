@@ -1,0 +1,84 @@
+@import url("https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400..900;1,400..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
+
+:root {
+  --primary-color: #ff8400;
+
+  --base-font: "Nunito", sans-serif; /* Base */
+}
+/* Body Styles */
+
+body {
+  font-family: var(--base-font);
+  margin: 0;
+  padding: 0;
+  background-color: #f9f9f9;
+  color: black;
+  font-weight: 700;
+}
+
+.btn,
+.input-group-text,
+.form-control,
+.form-select {
+  font-family: var(--base-font);
+  font-weight: 600;
+}
+
+/* Header Styles */
+.header {
+  background-color: var(--primary-color);
+}
+
+.header-title {
+  font-family: "Alegreya", serif;
+  font-size: 4rem;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+}
+
+.btn-instructions {
+  background-color: var(--primary-color);
+  border: 2px solid white;
+  color: white;
+  font-family: "Nunito", sans-serif;
+  font-size: 1rem;
+  padding: 0.75rem 2rem;
+  border-radius: 0.375rem;
+  transition: all 0.3s ease;
+  margin-bottom: 2rem;
+}
+
+.btn-instructions:hover {
+  background-color: white;
+  color: var(--primary-color);
+  border-color: white;
+}
+
+/* Form Controls - Sharp Borders */
+.form-control {
+  border-radius: 0;
+}
+
+/* Results Box */
+.results-box {
+  background-color: white;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 0 12px rgba(255, 132, 0, 0.7);
+  margin-top: 2rem;
+  text-align: center;
+}
+
+/* Outline Button with Primary Color */
+.btn-outline-primary {
+  color: black;
+
+  border-color: var(--primary-color);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
