@@ -47,6 +47,13 @@
               </select>
             </div>
             <p>Test your typing speed by typing the text shown below:</p>
+            <div
+              id="promptContainer"
+              class="form-control prompt-display"
+              aria-label="typing prompt"
+            >
+              The cat sat on the mat.
+            </div>
             <input
               class="form-control"
               type="text"
@@ -54,6 +61,7 @@
               value="The cat sat on the mat."
               aria-label="readonly input example"
               readonly
+              hidden
             />
             <textarea
               class="form-control rounded mt-3"

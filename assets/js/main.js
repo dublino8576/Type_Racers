@@ -45,6 +45,43 @@
     stopBtn.disabled = true;
     textareaEl.disabled = true;
   }
+  function highlightPromptWords(promptText, userText, promptContainerEl) {
+    if (!promptContainerEl) return;
+
+    const promptWords = splitIntoWords(promptText);
+    const userWords = splitIntoWords(userText);
+
+    let highlightedHtml = "";
+    const rawPromptWords = promptText.trim().split(/\s+/);
+
+    for (let i = 0; i < rawPromptWords.length; i++) {
+      const word = rawPromptWords[i];
+      let className = "";
+
+      if (i < userWords.length) {
+        const promptWord = sanitizeWord(word);
+        const typedWord = userWords[i];
+        className =
+          promptWord === typedWord ? "correct-word" : "incorrect-word";
+      }
+
+      highlightedHtml += className
+        ? `<span class="${className}">${word}</span> `
+        : `${word} `;
+    }
+
+    promptContainerEl.innerHTML = highlightedHtml.trim();
+  }
+
+  function resetPromptDisplay(promptText, promptContainerEl) {
+    if (!promptContainerEl) return;
+    promptContainerEl.textContent = promptText;
+  }
+
+  function updatePromptDisplay(inputEl, promptContainerEl) {
+    if (!inputEl || !promptContainerEl) return;
+    promptContainerEl.textContent = inputEl.value;
+  }
 
   function startTest(startBtn, stopBtn, textareaEl) {
     //performance.now() gives a high-resolution timestamp in milliseconds from clicking start. It does not depend on system clock so more accurate for measuring elapsed time like in Date.now() object
@@ -61,7 +98,8 @@
     elapsedTimeEl,
     textareaEl,
     inputEl,
-    wpmEl
+    wpmEl,
+    promptContainerEl
   ) {
     if (startTime === null) return; // ignore if not started
     const endTime = performance.now();
@@ -73,6 +111,7 @@
     stopBtn.disabled = true;
     startBtn.disabled = false;
     disableTextarea(textareaEl);
+    resetPromptDisplay(inputEl.value, promptContainerEl);
     startTime = null;
   }
 
@@ -145,6 +184,7 @@
     const elapsedTimeEl = document.getElementById("elapsedTime");
     const textareaEl = document.querySelector("textarea");
     const wpmEl = document.getElementById("wpm");
+    const promptContainerEl = document.getElementById("promptContainer");
 
     let startTime = null;
 
@@ -156,28 +196,49 @@
       !stopBtn ||
       !elapsedTimeEl ||
       !wpmEl ||
-      !textareaEl
+      !textareaEl ||
+      !promptContainerEl
     )
       return;
 
     // Initialize label and prompt
     updateSelectedLevelLabel(selectEl, selectedLevelEl);
     setRandomPrompt(selectEl.value, inputEl);
+    updatePromptDisplay(inputEl, promptContainerEl);
 
     // On change, update label and assign a new random prompt
     selectEl.addEventListener("change", () => {
       updateSelectedLevelLabel(selectEl, selectedLevelEl);
       setRandomPrompt(selectEl.value, inputEl);
+      updatePromptDisplay(inputEl, promptContainerEl);
     });
     // Initialize buttons
     setInitialButtonState(startBtn, stopBtn, textareaEl);
 
+    // Real-time highlighting as user types
+    textareaEl.addEventListener("input", (startTime) => {
+      if (startTime !== null) {
+        highlightPromptWords(
+          inputEl.value,
+          textareaEl.value,
+          promptContainerEl
+        );
+      }
+    });
     // Wire up start/stop
     startBtn.addEventListener("click", () =>
       startTest(startBtn, stopBtn, textareaEl)
     );
     stopBtn.addEventListener("click", () =>
-      stopTest(startBtn, stopBtn, elapsedTimeEl, textareaEl, inputEl, wpmEl)
+      stopTest(
+        startBtn,
+        stopBtn,
+        elapsedTimeEl,
+        textareaEl,
+        inputEl,
+        wpmEl,
+        promptContainerEl
+      )
     );
   });
 })();
