@@ -55,15 +55,55 @@
     enableTextarea(textareaEl);
   }
 
-  function stopTest(startBtn, stopBtn, elapsedTimeEl, textareaEl) {
+  function stopTest(
+    startBtn,
+    stopBtn,
+    elapsedTimeEl,
+    textareaEl,
+    inputEl,
+    wpmEl
+  ) {
     if (startTime === null) return; // ignore if not started
     const endTime = performance.now();
     const seconds = computeElapsedSeconds(startTime, endTime);
     updateElapsedTimeDisplay(seconds, elapsedTimeEl);
+    const correctWords = countCorrectWords(inputEl.value, textareaEl.value);
+    const wpm = computeWpm(correctWords, seconds);
+    updateWpmDisplay(wpm, wpmEl);
     stopBtn.disabled = true;
     startBtn.disabled = false;
     disableTextarea(textareaEl);
     startTime = null;
+  }
+
+  function sanitizeWord(word) {
+    return word.replace(/[^\w']/g, "").toLowerCase();
+  }
+
+  function splitIntoWords(text) {
+    return text.trim().split(/\s+/).map(sanitizeWord).filter(Boolean); //filter(Boolean) removes empty strings or falsy values
+  }
+
+  function countCorrectWords(promptText, userText) {
+    const promptWords = splitIntoWords(promptText);
+
+    const userWords = splitIntoWords(userText);
+    let correct = 0;
+    //loop through both arrays up to the length of the shorter one
+    for (let i = 0; i < Math.min(promptWords.length, userWords.length); i++) {
+      if (userWords[i] === promptWords[i]) correct++;
+    }
+    return correct;
+  }
+
+  function computeWpm(correctWords, seconds) {
+    if (!seconds) return 0;
+    return Math.round(correctWords / (seconds / 60));
+  }
+
+  function updateWpmDisplay(wpm, wpmEl) {
+    if (!wpmEl) return;
+    wpmEl.textContent = wpm;
   }
 
   function clearTextarea(textareaEl) {
@@ -104,10 +144,20 @@
     const stopBtn = document.getElementById("stop-btn");
     const elapsedTimeEl = document.getElementById("elapsedTime");
     const textareaEl = document.querySelector("textarea");
+    const wpmEl = document.getElementById("wpm");
+
     let startTime = null;
 
     //safety checks to ensure elements exist before proceeding
-    if (!selectEl || !inputEl || !startBtn || !stopBtn || !elapsedTimeEl)
+    if (
+      !selectEl ||
+      !inputEl ||
+      !startBtn ||
+      !stopBtn ||
+      !elapsedTimeEl ||
+      !wpmEl ||
+      !textareaEl
+    )
       return;
 
     // Initialize label and prompt
@@ -127,7 +177,7 @@
       startTest(startBtn, stopBtn, textareaEl)
     );
     stopBtn.addEventListener("click", () =>
-      stopTest(startBtn, stopBtn, elapsedTimeEl, textareaEl)
+      stopTest(startBtn, stopBtn, elapsedTimeEl, textareaEl, inputEl, wpmEl)
     );
   });
 })();
